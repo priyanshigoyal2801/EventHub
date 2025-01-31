@@ -7,16 +7,18 @@ const Navbar = () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navLeft}>
-        <h1>EventHub</h1>
+        <h1>Events</h1>
       </div>
-
-      {/* Mobile Menu Icon */}
-      <div className={styles.menuIcon} onClick={() => setMenuOpen(!menuOpen)}>
-        ☰
-      </div>
+      <button 
+        className={styles.menuIcon} 
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle navigation menu"
+      >
+        {menuOpen ? '✕' : '☰'}
+      </button>
 
       <div className={`${styles.navRight} ${menuOpen ? styles.show : ''}`}>
-      <a href="#" className={styles.navLink}>Requested changes</a>
+        <a href="#" className={styles.navLink}>Requested changes</a>
         <a href='#' className={styles.navLink}>Stats</a>
         <a href="#" className={styles.navLink}>My Events</a>
         <button className={styles.loginButton}>Login</button>
