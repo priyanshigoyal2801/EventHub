@@ -1,0 +1,37 @@
+.tableContainer {
+    width: 100%;
+    background-color: #2c2c2c;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #ffffff;
+  }
+  
+  .reactTable {
+    .rt-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+  
+    .rt-thead {
+      background-color: #1f1f1f;
+      color: white;
+    }
+  
+    .rt-th,
+    .rt-td {
+      padding: 12px;
+      border: 1px solid #444444;
+    }
+  
+    .rt-tr-group:hover {
+      background-color: #3a3a3a;
+    }
+  
+    .rt-pagination {
+      background-color: #1f1f1f;
+      color: white;
+      padding: 10px;
+      border-top: 1px solid #444444;
+    }
+  }
