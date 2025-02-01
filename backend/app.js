@@ -4,8 +4,13 @@ const userModel= require("./models/users");
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const jwt= require('jsonwebtoken');
+const cors = require('cors');
 require('dotenv').config();
 
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -39,15 +44,17 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user= await userModel.findOne({ email });
+
   if(!user)
     return res.status(400).send('User does not exist');
 
   bcrypt.compare(password, user.password, (err, result) => {
     if(!result)
         return res.status(400).send('Invalid credentials');
+
     const token= jwt.sign({email:email, id: user._id }, process.env.JWT_SECRET);
-    res.cookie("token",token);
-    res.send("logged in");
+    res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
+    res.json({ message: "Logged in successfully", token });
   });
 });
 
