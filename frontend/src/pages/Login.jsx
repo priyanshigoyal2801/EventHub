@@ -2,56 +2,67 @@ import React, { useState } from "react";
 import styles from "../css/login.module.css";
 
 const Login = () => {
-  const [isSignup, setIsSignup] = useState(false);
-  const [role, setRole] = useState("Societies");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Logged in as ${role}`);
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert(data.message);
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Something went wrong. Please try again!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
+    <>
+    <div className={styles.bg}></div>
     <div className={styles.container}>
-      <div className={styles.bg}></div>
-      <h2>{isSignup ? "Signup" : "Login"} Page</h2>
+      <h2>Login as Society/Admin</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         <input
-          type="text"
-          placeholder="Username"
+          type="email"
+          placeholder="Email"
           className={styles.input}
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
           placeholder="Password"
           className={styles.input}
           required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <div className={styles.selectContainer}>
-          <label className={styles.selectLabel}>Select Role:</label>
-          <select
-            className={styles.selectInput}
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <option value="Societies">Societies</option>
-            <option value="Admin">Admin</option>
-          </select>
-        </div>
-
-        <button type="submit" className={styles.submitButton}>
-          {isSignup ? "Sign Up" : "Login"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setIsSignup((prev) => !prev)}
-          className={styles.toggleSignup}
-        >
-          {isSignup ? "Already have an account? Login" : "Don't have an account? Sign up"}
+        <button type="submit" className={styles.submitButton} disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>
+    </>
   );
 };
 

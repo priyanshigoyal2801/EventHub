@@ -1,98 +1,123 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-  }
 .container {
-    width: 100%;
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-  }
-  .bg {
-    background-image: url('../assets/Tiet_Track_Mhostel.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    width: 100%;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    filter: brightness(40%);
-    
+  width: 100%;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
 }
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .input {
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  .selectContainer {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-  }
-  
-  .selectLabel {
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-  
-  .selectInput {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: white;
-    cursor: pointer;
-  }
-  
-  .selectInput:hover {
-    border-color: #007bff;
-  }
-  
-  .submitButton {
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .submitButton:hover {
-    background-color: #218838;
-  }
-  
-  .toggleSignup {
-    background: none;
-    border: none;
-    color: #007bff;
-    cursor: pointer;
-    text-align: center;
-    margin-top: 10px;
-  }
-  
-  .toggleSignup:hover {
-    text-decoration: underline;
-  }
-  
+
+.container:hover {
+  transform: scale(1.02);
+}
+
+.bg {
+  background-image: url('../assets/Tiet_Track_Mhostel.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  filter: brightness(35%);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #222;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.selectContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.selectLabel {
+  font-size: 14px;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.selectInput {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.selectInput:hover {
+  border-color: #007bff;
+}
+
+.submitButton {
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.submitButton:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.toggleSignup {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+.toggleSignup:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
