@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import styles from './Navbar.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
   return (
     <nav className={styles.navbar}>
       <div className={styles.navLeft}>
@@ -21,7 +22,9 @@ const Navbar = () => {
         <a href="#" className={styles.navLink}>Requested changes</a>
         <a href='#' className={styles.navLink}>Stats</a>
         <a href="#" className={styles.navLink}>My Events</a>
-        <button className={styles.loginButton}>Login</button>
+        <button onClick={()=>{
+          navigate('/login');
+        }} className={styles.loginButton}>Login</button>
       </div>
     </nav>
   );

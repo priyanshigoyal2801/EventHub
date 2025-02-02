@@ -10,6 +10,11 @@
     left: 0;
     z-index: -1;
     filter: brightness(40%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
 }
 
 .content {
@@ -18,9 +23,8 @@
     align-items: center;
     /* height: calc(100vh - 64px); */
     height: 60vh;
-    width: 90vw;
-    padding-top: 64px;
-    position: relative;
+    width: 100vw;
+    position: absolute;
     z-index: 1;
 }
 
