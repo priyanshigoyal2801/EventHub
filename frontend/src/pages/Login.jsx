@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styles from "../css/login.module.css";
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode'; // Import jwtDecode
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -36,20 +35,26 @@ const Login = () => {
     }
   };
 
-  const getUserFromToken = () => {
-    const token = Cookies.get("token");
-    if (!token) {
-      console.log("No token found");
-      return null;
-    }
-    
+  const getUserFromToken = async () => {
     try {
-      const decoded = jwtDecode(token);
-      console.log("Decoded Token:", decoded);
-      alert(`User: ${decoded.email}, Role: ${decoded.type}`); // Example output
+      const response = await fetch("http://localhost:3000/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Ensure your backend allows this for CORS
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("User data:", data);
+        alert(`User data: ${JSON.stringify(data)}`);
+      } else {
+        alert(data.error);
+      }
     } catch (error) {
-      console.error("Invalid token", error);
-      return null;
+      console.error("Failed to fetch user data:", error);
+      alert("Something went wrong. Please try again!");
     }
   };
 
