@@ -81,55 +81,49 @@ app.get('/logout', (req, res) => {
 });
 
 app.post('/table', async (req, res) => {
-  const { eventName, orgName, date, venue, time, registrationformlink, feedbackformlink, pocNumber } = req.body;
-  const table= await tableModel.create({
-    eventName,
-    orgName,
-    date,
-    venue,
-    time,
-    registrationformlink,
-    feedbackformlink,
-    pocNumber
-  });
-  res.send("table created");
+  try {
+    const { eventName, orgName, date, venue, time, registrationformlink, feedbackformlink, pocNumber } = req.body;
+    const table = await tableModel.create({
+      eventName,
+      orgName,
+      date,
+      venue,
+      time,
+      registrationformlink,
+      feedbackformlink,
+      pocNumber
+    });
+    res.send("table created");
+  } catch (error) {
+    res.status(500).send("Error creating table");
+  }
 });
 
 app.get('/table', async (req, res) => {
-  const table= await tableModel.find({
-    eventName,
-    orgName,
-    date,
-    venue,
-    time,
-    registrationformlink,
-    feedbackformlink,
-  });
-  res.json(table);
-});
-
-app.get('/table-log', async (req, res) => {
-  const table= await tableModel.find({
-    eventName,
-    orgName,
-    date,
-    venue,
-    time,
-    registrationformlink,
-    feedbackformlink,
-    pocNumber
-  });
-  res.json(table);
+  try {
+    const table = await tableModel.find({});
+    res.json(table);
+  } catch (error) {
+    res.status(500).send("Error fetching tables");
+  }
 });
 
 app.get('/table/:id', async (req, res) => {
-  const table= await tableModel.findById(req.params.id);
-  res.json(table);
-}); 
+  try {
+    const table = await tableModel.findById(req.params.id);
+    res.json(table);
+  } catch (error) {
+    res.status(500).send("Error fetching table by ID");
+  }
+});
 
 app.delete('/table/:id', async (req, res) => {
-  const table= await tableModel.findByIdAndDelete(req.params.id);
-  res.send("table deleted");
+  try {
+    await tableModel.findByIdAndDelete(req.params.id);
+    res.send("table deleted");
+  } catch (error) {
+    res.status(500).send("Error deleting table");
+  }
 });
 
 app.listen(3000,()=>{console.log("Server started at 3000")})
