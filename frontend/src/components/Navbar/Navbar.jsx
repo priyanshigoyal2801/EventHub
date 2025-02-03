@@ -49,7 +49,7 @@ const Navbar = () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navLeft}>
-        <h1>Events</h1>
+        <h1>Thapar University</h1>
       </div>
       <button 
         className={styles.menuIcon} 
