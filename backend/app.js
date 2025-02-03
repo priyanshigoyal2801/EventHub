@@ -37,7 +37,7 @@ app.post('/register', async (req, res) => {
       });
 
       const token= jwt.sign({email:email, id: user._id, type: user.type }, process.env.JWT_SECRET);
-      res.cookie("token", token);
+      res.cookie("token", token , { sameSite: "strict" });
       // , { httpOnly: true, sameSite: "strict" }
       res.send("registered");
     })
@@ -56,7 +56,7 @@ app.post('/login', async (req, res) => {
         return res.status(400).send('Invalid credentials');
 
     const token= jwt.sign({email:email, id: user._id, type: user.type}, process.env.JWT_SECRET);
-    res.cookie("token", token);
+    res.cookie("token", token , { sameSite: "strict" });
     // , { httpOnly: true, sameSite: "strict" }
     res.json({ message: "Logged in successfully", token });
   });

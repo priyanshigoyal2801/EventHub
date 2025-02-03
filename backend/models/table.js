@@ -21,4 +21,4 @@ const tableSchema = mongoose.Schema({
   pocNumber: { type: Number, required: true },
 });
 
-module.exports = mongoose.model("table", userSchema);
+module.exports = mongoose.model("table", tableSchema);

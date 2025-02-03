@@ -2,21 +2,44 @@ import React, { useState, useEffect } from 'react';
 import styles from './Navbar.module.css';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import GetTokenData from '../../utils/GetTokenData';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState("guest");
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = Cookies.get("token");
-    setIsLoggedIn(!!token);
+
+    if (!token) {
+      setIsLoggedIn(false);
+      setUserRole("guest");
+      return;
+    }
+
+    const fetchUserRole = async () => {
+      try {
+        const tokenData = await GetTokenData(); 
+        const role = tokenData?.decoded?.type || "guest"; 
+        setIsLoggedIn(true);
+        setUserRole(role.toLowerCase());
+      } catch (error) {
+        console.error("Failed to fetch token data:", error);
+        setIsLoggedIn(false);
+        setUserRole("guest");
+      }
+    };
+
+    fetchUserRole();
   }, []);
 
   const handleAuth = () => {
     if (isLoggedIn) {
       Cookies.remove("token");
       setIsLoggedIn(false);
+      setUserRole("guest");
       navigate("/");
     } else {
       navigate("/login");
@@ -37,9 +60,23 @@ const Navbar = () => {
       </button>
 
       <div className={`${styles.navRight} ${menuOpen ? styles.show : ''}`}>
-        <a href="#" className={styles.navLink}>Requested changes</a>
-        <a href='#' className={styles.navLink}>Stats</a>
-        <a href="#" className={styles.navLink}>My Events</a>
+        {userRole === "guest" && (
+          <a href="#" className={styles.navLink}>Stats</a>
+        )}
+        {userRole === "society" && (
+          <>
+            <a href="#" className={styles.navLink}>Requested Changes</a>
+            <a href="#" className={styles.navLink}>Stats</a>
+            <a href="#" className={styles.navLink}>My Events</a>
+          </>
+        )}
+        {userRole === "admin" && (
+          <>
+            <a href="#" className={styles.navLink}>Manage Users</a>
+            <a href="#" className={styles.navLink}>Event Approvals</a>
+            <a href="#" className={styles.navLink}>Dashboard</a>
+          </>
+        )}
         <button onClick={handleAuth} className={styles.loginButton}>
           {isLoggedIn ? "Logout" : "Login"}
         </button>

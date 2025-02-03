@@ -55,9 +55,9 @@ const Login = () => {
 
       const data = await response.json();
       if (response.ok) {
-        Cookies.set("token", data.token, { expires: 1 }); // Store token
+        Cookies.set("token", data.token, { expires: 1 });
         alert(data.message);
-        await getUserFromToken(); // Fetch user data and navigate
+        await getUserFromToken();
       } else {
         alert(data.error || "Login failed");
       }
