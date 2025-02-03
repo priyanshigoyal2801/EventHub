@@ -15,6 +15,7 @@
     "@fontsource/roboto": "^5.1.1",
     "@mui/material": "^6.4.2",
     "@mui/x-data-grid": "^7.24.1",
+    "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
