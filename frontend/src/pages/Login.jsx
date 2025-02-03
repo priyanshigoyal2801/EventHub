@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../css/login.module.css";
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode'; // Import jwtDecode
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,38 +20,30 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Ensure your backend allows this for CORS
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
       if (response.ok) {
+        Cookies.set("token", data.token, { expires: 1 }); // Store token in cookies
         alert(data.message);
+        const decoded = jwtDecode(data.token);
+        if (decoded.type === "Admin") {
+          navigate("/admin");
+        } else if (decoded.type === "Society") {
+          navigate("/society");
+        } else {
+          alert("Invalid user type");
+        }
       } else {
-        alert(data.error);
+        alert(data.error || "Login failed");
       }
     } catch (error) {
       console.error("Login failed:", error);
       alert("Something went wrong. Please try again!");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getUserFromToken = () => {
-    const token = Cookies.get("token");
-    if (!token) {
-      console.log("No token found");
-      return null;
-    }
-    
-    try {
-      const decoded = jwtDecode(token);
-      console.log("Decoded Token:", decoded);
-      alert(`User: ${decoded.email}, Role: ${decoded.type}`); // Example output
-    } catch (error) {
-      console.error("Invalid token", error);
-      return null;
     }
   };
 
@@ -78,10 +72,6 @@ const Login = () => {
 
           <button type="submit" className={styles.submitButton} disabled={loading}>
             {loading ? "Logging in..." : "Login"}
-          </button>
-
-          <button type="button" className={styles.submitButton} onClick={getUserFromToken}>
-            Check token
           </button>
         </form>
       </div>

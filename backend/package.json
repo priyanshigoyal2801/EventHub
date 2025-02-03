@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mongodb": "^6.13.0",
-    "mongoose": "^8.9.6"
+    "mongoose": "^8.9.6",
+    "nodemon": "^3.1.9"
   }
 }
