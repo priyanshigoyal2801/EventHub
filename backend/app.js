@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const userModel= require("./models/users");
+const tableModel= require("./models/table");
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const jwt= require('jsonwebtoken');
@@ -66,7 +67,6 @@ app.post('/user', (req, res) => {
   if (!token) {
     return res.status(401).send('No token provided');
   }
-
   try {
     const decoded = jwtDecode(token);
     res.json({ decoded });
@@ -78,6 +78,58 @@ app.post('/user', (req, res) => {
 app.get('/logout', (req, res) => {
   res.clearCookie("token");
   res.send("logged out");
+});
+
+app.post('/table', async (req, res) => {
+  const { eventName, orgName, date, venue, time, registrationformlink, feedbackformlink, pocNumber } = req.body;
+  const table= await tableModel.create({
+    eventName,
+    orgName,
+    date,
+    venue,
+    time,
+    registrationformlink,
+    feedbackformlink,
+    pocNumber
+  });
+  res.send("table created");
+});
+
+app.get('/table', async (req, res) => {
+  const table= await tableModel.find({
+    eventName,
+    orgName,
+    date,
+    venue,
+    time,
+    registrationformlink,
+    feedbackformlink,
+  });
+  res.json(table);
+});
+
+app.get('/table-log', async (req, res) => {
+  const table= await tableModel.find({
+    eventName,
+    orgName,
+    date,
+    venue,
+    time,
+    registrationformlink,
+    feedbackformlink,
+    pocNumber
+  });
+  res.json(table);
+});
+
+app.get('/table/:id', async (req, res) => {
+  const table= await tableModel.findById(req.params.id);
+  res.json(table);
+}); 
+
+app.delete('/table/:id', async (req, res) => {
+  const table= await tableModel.findByIdAndDelete(req.params.id);
+  res.send("table deleted");
 });
 
 app.listen(3000,()=>{console.log("Server started at 3000")})
