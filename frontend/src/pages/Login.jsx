@@ -1,14 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../css/login.module.css";
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const getUserFromToken = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("User data:", data);
+        // alert(`User data: ${JSON.stringify(data)}`);
+        if (data.decoded.type === "Admin") {
+          navigate("/admin");
+        } else if (data.decoded.type === "Society") {
+          navigate("/society");
+        } else {
+          alert("Invalid user type");
+        }
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      navigate("/login");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,16 +55,9 @@ const Login = () => {
 
       const data = await response.json();
       if (response.ok) {
-        Cookies.set("token", data.token, { expires: 1 }); // Store token in cookies
+        Cookies.set("token", data.token, { expires: 1 }); // Store token
         alert(data.message);
-        const decoded = jwtDecode(data.token);
-        if (decoded.type === "Admin") {
-          navigate("/admin");
-        } else if (decoded.type === "Society") {
-          navigate("/society");
-        } else {
-          alert("Invalid user type");
-        }
+        await getUserFromToken(); // Fetch user data and navigate
       } else {
         alert(data.error || "Login failed");
       }

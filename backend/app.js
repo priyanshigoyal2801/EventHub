@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const jwt= require('jsonwebtoken');
 const cors = require('cors');
+const { jwtDecode } = require('jwt-decode');
 require('dotenv').config();
 
 app.use(cors({
@@ -58,6 +59,20 @@ app.post('/login', async (req, res) => {
     // , { httpOnly: true, sameSite: "strict" }
     res.json({ message: "Logged in successfully", token });
   });
+});
+
+app.post('/user', (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).send('No token provided');
+  }
+
+  try {
+    const decoded = jwtDecode(token);
+    res.json({ decoded });
+  } catch (error) {
+    res.status(400).send('Invalid token');
+  }
 });
 
 app.get('/logout', (req, res) => {
