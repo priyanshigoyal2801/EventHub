@@ -87,9 +87,11 @@ app.post('/table', async (req, res) => {
     await tableModel.create({
       eventName,
       orgName,
-      date,
+      dateFrom,
+      dateTill,
       venue,
-      time,
+      timeFrom,
+      timeTill,
       registrationformlink,
       feedbackformlink,
       pocNumber
