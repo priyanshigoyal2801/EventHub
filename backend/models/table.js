@@ -21,7 +21,9 @@ const tableSchema = mongoose.Schema({
   registrationformlink: { type: String, required: true },
   feedbackformlink: { type: String, required: true },
   pocNumber: { type: String, required: true },
-  approval: { type: String, required: true },
+  approval: { type: String, required: true, default: "Pending" },
+  logo: { type: Buffer, required: true },
+  socials: { type: Object, required: true }
 });
 
 module.exports = mongoose.model("table", tableSchema);

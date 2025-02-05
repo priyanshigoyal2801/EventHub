@@ -58,96 +58,21 @@ const Table = () => {
     fetchData();
   }, []);
 
-  // const data = useMemo(
-  //   () => [
-  //     {
-  //       eventName: 'Tech Conference 2024',
-  //       orgName: 'Tech Corp',
-  //       dateFrom: '2024-05-10',
-  //       dateTill: '2024-05-12',
-  //       venue: 'Grand Hall A',
-  //       timeFrom: '09:00 AM',
-  //       timeTill: '05:00 PM',
-  //       registrationformlink: 'http://techconf.com/register',
-  //       feedbackformlink: 'http://techconf.com/feedback',
-  //       pocNumber: '9988776655',
-  //       approval: 'approved',
-  //     },
-  //     {
-  //       eventName: 'AI Symposium',
-  //       orgName: 'AI Innovators',
-  //       dateFrom: '2024-06-15',
-  //       dateTill: '2024-06-16',
-  //       venue: 'Tech Park',
-  //       timeFrom: '10:00 AM',
-  //       timeTill: '04:00 PM',
-  //       registrationformlink: 'http://aisymposium.com/register',
-  //       feedbackformlink: 'http://aisymposium.com/feedback',
-  //       pocNumber: '9911223344',
-  //       approval: 'pending',
-  //     },
-  //     {
-  //       eventName: 'Cloud Expo',
-  //       orgName: 'Cloud Masters',
-  //       dateFrom: '2024-07-01',
-  //       dateTill: '2024-07-03',
-  //       venue: 'Expo Center',
-  //       timeFrom: '11:00 AM',
-  //       timeTill: '06:00 PM',
-  //       registrationformlink: 'http://cloudexpo.com/register',
-  //       feedbackformlink: 'http://cloudexpo.com/feedback',
-  //       pocNumber: '9876543212',
-  //       approval: 'approved',
-  //     },
-  //     {
-  //       eventName: 'Startup Meetup',
-  //       orgName: 'Entrepreneurs Hub',
-  //       dateFrom: '2024-08-20',
-  //       dateTill: '2024-08-21',
-  //       venue: 'Innovation Hub',
-  //       timeFrom: '09:30 AM',
-  //       timeTill: '05:30 PM',
-  //       registrationformlink: 'http://startupmeetup.com/register',
-  //       feedbackformlink: 'http://startupmeetup.com/feedback',
-  //       pocNumber: '9955667788',
-  //       approval: 'pending',
-  //     },
-  //     {
-  //       eventName: 'Cybersecurity Summit',
-  //       orgName: 'CyberShield',
-  //       dateFrom: '2024-09-10',
-  //       dateTill: '2024-09-12',
-  //       venue: 'Cyber Center',
-  //       timeFrom: '08:45 AM',
-  //       timeTill: '04:45 PM',
-  //       registrationformlink: 'http://cybersummit.com/register',
-  //       feedbackformlink: 'http://cybersummit.com/feedback',
-  //       pocNumber: '9922334455',
-  //       approval: 'approved',
-  //     },
-  //     {
-  //       eventName: 'Blockchain Conference',
-  //       orgName: 'CryptoWorld',
-  //       dateFrom: '2024-10-05',
-  //       dateTill: '2024-10-07',
-  //       venue: 'Blockchain Hub',
-  //       timeFrom: '10:15 AM',
-  //       timeTill: '06:30 PM',
-  //       registrationformlink: 'http://blockchainconf.com/register',
-  //       feedbackformlink: 'http://blockchainconf.com/feedback',
-  //       pocNumber: '9966554433',
-  //       approval: 'pending',
-  //     },
-  //   ],
-  //   []
-  // );
-
   const filteredData = data.filter((row) =>
     Object.values(row).some(
       (value) =>
         typeof value === 'string' && value.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
+
+  const arrayBufferToBase64 = (arrayBuffer) => {
+    const bytes = new Uint8Array(arrayBuffer);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+  };
 
   const columns = useMemo(
     () => [
@@ -163,9 +88,20 @@ const Table = () => {
       { Header: 'Feedback', accessor: 'feedbackformlink' },
       { Header: 'Approval Status', accessor: 'approval' },
       { Header: 'Actions', accessor: 'actions' },
+      { Header: 'Logo', accessor: 'logo' },
+      { Header: 'Socials', accessor: 'socials' },
     ],
     []
   );
+
+  const renderSocials = (socials) => {
+    return Object.entries(socials)
+      .map(([key, value]) => (
+        <Typography key={key} variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+          {key}: <Link href={value} target="_blank" rel="noopener noreferrer" sx={{ color: 'primary.light' }}>{value}</Link>
+        </Typography>
+      ));
+  };
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -264,6 +200,10 @@ const Table = () => {
                                 Cancel
                               </Button>
                             )
+                          ) : column.accessor === 'logo' ? (
+                            <img src={`data:image/png;base64,${arrayBufferToBase64(row[column.accessor].data)}`} alt="logo" style={{ width: '50px', height: '50px' }} />
+                          ) : column.accessor === 'socials' ? (
+                            renderSocials(row[column.accessor])
                           ) : (
                             row[column.accessor]
                           )}
