@@ -15,6 +15,7 @@ services:
     restart: always
     environment:
       - VITE_BACKEND_URL=http://backend:3000
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app
       - /app/node_modules

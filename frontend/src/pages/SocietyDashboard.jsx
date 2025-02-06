@@ -10,7 +10,7 @@ const SocietyDashboard = () => {
       <div className={styles.bg}></div>
       <Navbar />
       <div className={styles.content}>
-        <Table className={styles.table} />
+        <Table type="society" className={styles.table} />
       </div>
     </>
   )

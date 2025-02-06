@@ -18,6 +18,7 @@ import {
   InputAdornment,
   CircularProgress,
   Alert,
+  Modal,
 } from '@mui/material';
 import { Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
 
@@ -32,13 +33,62 @@ const darkTheme = createTheme({
   },
 });
 
-const Table = () => {
+const getColumns = (type) => {
+  switch (type) {
+    case 'dashboard':
+      return [
+        { Header: 'Logo', accessor: 'logo'},
+        { Header: 'Event Name', accessor: 'eventName' },
+        { Header: 'Organisation', accessor: 'orgName' },
+        { Header: 'Date From', accessor: 'dateFrom' },
+        { Header: 'Date Till', accessor: 'dateTill' },
+        { Header: 'Venue', accessor: 'venue' },
+        { Header: 'Time From', accessor: 'timeFrom' },
+        { Header: 'Time Till', accessor: 'timeTill' },
+        { Header: 'Registration', accessor: 'registrationformlink' },
+        { Header: 'Feedback', accessor: 'feedbackformlink' },
+        { Header: 'Socials', accessor: 'socials' },
+      ];
+    case 'society':
+      return [
+        { Header: 'Event Name', accessor: 'eventName' },
+        { Header: 'Date From', accessor: 'dateFrom' },
+        { Header: 'Date Till', accessor: 'dateTill' },
+        { Header: 'Venue', accessor: 'venue' },
+        { Header: 'Registration', accessor: 'registrationformlink' },
+        { Header: 'Feedback', accessor: 'feedbackformlink' },
+        { Header: 'Approval Status', accessor: 'approval' },
+        { Header: 'Actions', accessor: 'actions' },
+      ];
+    case 'admin':
+      return [
+        { Header: 'Logo', accessor: 'logo'},
+        { Header: 'Event Name', accessor: 'eventName' },
+        { Header: 'Organisation', accessor: 'orgName' },
+        { Header: 'Venue', accessor: 'venue' },
+        { Header: 'Date From', accessor: 'dateFrom' },
+        { Header: 'Date Till', accessor: 'dateTill' },
+        { Header: 'Time From', accessor: 'timeFrom' },
+        { Header: 'Time Till', accessor: 'timeTill' },
+        { Header: 'Approval Status', accessor: 'approval' },
+        { Header: 'POC', accessor: 'pocNumber'},
+        { Header: 'Actions', accessor: 'actions' },
+      ];
+    default:
+      return [];
+  }
+};
+
+const Table = ({ type }) => {
+
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -76,25 +126,7 @@ const Table = () => {
     return window.btoa(binary);
   };
 
-  const columns = useMemo(
-    () => [
-      { Header: 'Event Name', accessor: 'eventName' },
-      { Header: 'Organisation', accessor: 'orgName' },
-      { Header: 'Date From', accessor: 'dateFrom' },
-      { Header: 'Date Till', accessor: 'dateTill' },
-      { Header: 'Venue', accessor: 'venue' },
-      { Header: 'Time From', accessor: 'timeFrom' },
-      { Header: 'Time Till', accessor: 'timeTill' },
-      { Header: 'POC Number', accessor: 'pocNumber' },
-      { Header: 'Registration', accessor: 'registrationformlink' },
-      { Header: 'Feedback', accessor: 'feedbackformlink' },
-      { Header: 'Approval Status', accessor: 'approval' },
-      { Header: 'Actions', accessor: 'actions' },
-      { Header: 'Logo', accessor: 'logo' },
-      { Header: 'Socials', accessor: 'socials' },
-    ],
-    []
-  );
+  const columns = useMemo(() => getColumns(type), [type]);
 
   const renderSocials = (socials) => {
     return Object.entries(socials)
@@ -103,6 +135,16 @@ const Table = () => {
           {key}: <Link href={value} target="_blank" rel="noopener noreferrer" sx={{ color: 'primary.light' }}>{value}</Link>
         </Typography>
       ));
+  };
+
+  const openModal = (description) => {
+    setModalContent(description);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalContent('');
   };
 
   return (
@@ -204,6 +246,10 @@ const Table = () => {
                             )
                           ) : column.accessor === 'logo' ? (
                             <img src={`data:image/png;base64,${arrayBufferToBase64(row[column.accessor].data)}`} alt="logo" style={{ width: '50px', height: '50px' }} />
+                          ) : column.accessor === 'description' ? (
+                            <Button variant="contained" color="error" size="small" sx={{ borderRadius: 2 }} onClick={() => openModal(row.description)}>
+                                View Description
+                              </Button>
                           ) : column.accessor === 'socials' ? (
                             renderSocials(row[column.accessor])
                           ) : (
@@ -224,6 +270,15 @@ const Table = () => {
             </MuiTable>
           </TableContainer>
         )}
+        <Modal open={modalOpen} onClose={closeModal} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Paper sx={{ padding: '20px', width: '400px', bgcolor: 'background.paper' }}>
+            <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>Event Description</Typography>
+            <Typography variant="body1" sx={{ color: 'text.primary', marginTop: '10px' }}>{modalContent}</Typography>
+            <Button onClick={closeModal} variant="contained" color="secondary" sx={{ marginTop: '15px', width: '100%' }}>
+              Close
+            </Button>
+          </Paper>
+        </Modal>
       </Box>
     </ThemeProvider>
   );

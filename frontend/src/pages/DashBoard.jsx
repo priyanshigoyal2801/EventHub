@@ -9,7 +9,7 @@ const DashBoard = () => {
       <div className={styles.bg}></div>
       <Navbar />
       <div className={styles.content}>
-        <Table className={styles.table} />
+        <Table type="dashboard" className={styles.table} />
       </div>
     </>
   )
