@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const app = express();
+const userModel = require("./models/users");
 const tableModel = require("./models/table");
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');

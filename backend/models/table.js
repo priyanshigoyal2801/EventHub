@@ -22,7 +22,7 @@ const tableSchema = mongoose.Schema({
   feedbackformlink: { type: String, required: true },
   pocNumber: { type: String, required: true },
   approval: { type: String, required: true, default: "Pending" },
-  logo: { type: Buffer, required: true },
+  logo: { type: Buffer },
   socials: { type: Object, required: true }
 });
 
