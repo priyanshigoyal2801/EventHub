@@ -68,6 +68,7 @@ const Navbar = () => {
             <a href="#" className={styles.navLink}>Requested Changes</a>
             <a href="#" className={styles.navLink}>Stats</a>
             <a href="#" className={styles.navLink}>My Events</a>
+            <a href='/create-event' className={styles.navLink}>Create Event</a>
           </>
         )}
         {userRole === "admin" && (

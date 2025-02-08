@@ -3,6 +3,8 @@ import styles from '../css/DashBoard.module.css'
 import Navbar from '../components/Navbar/Navbar.jsx'
 import Table from '../components/Table/Table'
 
+// public dashboard page where all the events will be listed
+
 const DashBoard = () => {
   return (
     <>
