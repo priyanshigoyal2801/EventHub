@@ -23,7 +23,9 @@ const tableSchema = mongoose.Schema({
   pocNumber: { type: String, required: true },
   approval: { type: String, required: true, default: "Pending" },
   logo: { type: Buffer, required: true },
-  socials: { type: Object, required: true }
+  socials: { type: Object, required: true },
+  description: { type: String, required: true },
+  proposal: { type: Buffer, required: true }
 });
 
 module.exports = mongoose.model("table", tableSchema);
