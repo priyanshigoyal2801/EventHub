@@ -5,11 +5,11 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
-COPY .env . 
-# Copying the .env file to the container
+
 COPY . .
 
 EXPOSE 3000
-USER node
+RUN npm install -g nodemon
+USER root
 
-CMD ["npm","start"]
+CMD ["nodemon", "--legacy-watch", "app.js"]
