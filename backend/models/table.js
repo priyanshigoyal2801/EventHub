@@ -25,7 +25,8 @@ const tableSchema = mongoose.Schema({
   logo: { type: String, required: true },
   socials: { type: Object, required: true },
   description: { type: String, required: true },
-  proposal: { type: String, required: true }
+  proposal: { type: String, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true }
 });
 
 module.exports = mongoose.model("table", tableSchema);

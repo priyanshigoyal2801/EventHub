@@ -70,8 +70,10 @@ const SubmitApplication = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage("");
-
+  
     try {
+      const token = localStorage.getItem("token"); // Get token
+  
       const formDataToSend = new FormData();
       formDataToSend.append("eventName", formData.eventName);
       formDataToSend.append("orgName", formData.orgName);
@@ -80,18 +82,23 @@ const SubmitApplication = () => {
       formDataToSend.append("venue", formData.tentativeVenue);
       formDataToSend.append("timeFrom", formData.timeFrom);
       formDataToSend.append("timeTill", formData.timeTill);
-      formDataToSend.append("registrationformlink", formData.registrationForm);
-      formDataToSend.append("feedbackformlink", formData.feedbackForm);
       formDataToSend.append("pocNumber", formData.pocNumber);
       formDataToSend.append("socials", JSON.stringify(formData.socials));
       formDataToSend.append("description", formData.eventDescription);
+      formDataToSend.append("registrationformlink", formData.registrationForm);
+formDataToSend.append("feedbackformlink", formData.feedbackForm);
+
       if (formData.logo) formDataToSend.append("logo", formData.logo);
       if (formData.proposal) formDataToSend.append("proposal", formData.proposal);
-
+  
       const response = await axios.post("http://localhost:3000/table", formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
       });
-
+  
       alert("Event application submitted successfully!");
       setFormData({
         eventName: "",
@@ -117,7 +124,7 @@ const SubmitApplication = () => {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <>
       <div className={styles.bg}>
