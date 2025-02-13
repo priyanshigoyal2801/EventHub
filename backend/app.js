@@ -100,6 +100,13 @@ app.post('/table', async (req, res) => {
     return res.status(400).send('Please upload both logo and proposal files');
   }
 
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).send('No token provided');
+  }
+  const decoded = jwtDecode(token);
+  const userId = decoded.id;
+
   try {
     // Upload logo
     const logoUpload = await cloudinary.uploader.upload(req.files.logo.tempFilePath)
@@ -136,6 +143,7 @@ app.post('/table', async (req, res) => {
       socials: JSON.parse(socials),
       description,
       proposal: proposalUpload.url,
+      userId,
     });
 
     res.status(200).json({
@@ -161,6 +169,22 @@ app.post('/table', async (req, res) => {
         if (err) console.error('Error deleting proposal temp file:', err);
       });
     }
+  }
+});
+
+app.get('/society/table', async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).send('No token provided');
+  }
+  const decoded = jwtDecode(token);
+  const userId = decoded.id;
+
+  try {
+    const table = await tableModel.find({ userId });
+    res.json(table);
+  } catch (error) {
+    res.status(500).send("Error fetching tables");
   }
 });
 

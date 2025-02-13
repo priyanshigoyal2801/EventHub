@@ -26,7 +26,7 @@ const Login = () => {
         if (data.decoded.type === "Admin") {
           navigate("/admin");
         } else if (data.decoded.type === "Society") {
-          navigate("/society");
+          navigate(`/society/${data.decoded.id}`);
         } else {
           alert("Invalid user type");
         }

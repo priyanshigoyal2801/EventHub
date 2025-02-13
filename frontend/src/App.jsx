@@ -19,8 +19,8 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
         <Route element={<ProtectSociety />} >
-          <Route path="/society/" element={<SocietyDashboard />} />
-          <Route path="/society/create-event" element={<CreateEvents />} />
+          <Route path="/society/:id" element={<SocietyDashboard />} />
+          <Route path="/society/:id/create-event" element={<CreateEvents />} />
         </Route>
       </Routes>
     </BrowserRouter>
