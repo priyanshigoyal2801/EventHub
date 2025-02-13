@@ -67,7 +67,7 @@ const Navbar = () => {
           <>
             <a href="#" className={styles.navLink}>Requested Changes</a>
             <a href="#" className={styles.navLink}>Stats</a>
-            <a href="#" className={styles.navLink}>My Events</a>
+            <a href="/society" className={styles.navLink}>My Events</a>
             <a href='/society/create-event' className={styles.navLink}>Create Event</a>
           </>
         )}
@@ -75,7 +75,7 @@ const Navbar = () => {
           <>
             <a href="#" className={styles.navLink}>Manage Users</a>
             <a href="#" className={styles.navLink}>Event Approvals</a>
-            <a href="#" className={styles.navLink}>Dashboard</a>
+            <a href="/admin" className={styles.navLink}>Dashboard</a>
           </>
         )}
         <button onClick={handleAuth} className={styles.loginButton}>

@@ -48,6 +48,7 @@ const getColumns = (type) => {
         { Header: "Time Till", accessor: "timeTill" },
         { Header: "Registration", accessor: "registrationformlink" },
         { Header: "Feedback", accessor: "feedbackformlink" },
+        { Header: "Approval Status", accessor: "approval" },
         { Header: "Socials", accessor: "socials" },
       ];
     case "society":
@@ -94,21 +95,22 @@ const Table = ({ type }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/table"); // Replace with actual API URL
+  try {
+    const response = await fetch(`http://localhost:3000/table?type=${type}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+    const result = await response.json();
+    console.log("Fetched events:", result);
+    setData(result);
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    setError(error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const result = await response.json();
-        console.log(result);
-        setData(result);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchData();
   }, []);
@@ -179,7 +181,7 @@ const Table = ({ type }) => {
             variant="h4"
             sx={{ color: "text.primary", fontWeight: "bold" }}
           >
-            Events
+            Events 
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <IconButton
@@ -345,9 +347,7 @@ const Table = ({ type }) => {
                             )
                           ) : column.accessor === "logo" ? (
                             <img
-                              src={`data:image/png;base64,${arrayBufferToBase64(
-                                row[column.accessor].data
-                              )}`}
+                            src={row.logo}
                               alt="logo"
                               style={{ width: "50px", height: "50px" }}
                             />

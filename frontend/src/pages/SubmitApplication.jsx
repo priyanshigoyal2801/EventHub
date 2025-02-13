@@ -13,6 +13,7 @@ import {
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import styles from "../css/Submit.module.css";
+import Navbar from "../components/Navbar/Navbar";
 
 const SubmitApplication = () => {
   const [formData, setFormData] = useState({
@@ -119,7 +120,10 @@ const SubmitApplication = () => {
 
   return (
     <>
-      <div className={styles.bg}></div>
+      <div className={styles.bg}>
+      
+      </div>
+      <Navbar />
       <Box sx={{ maxWidth: 600, margin: "auto", mt: 5, p: 4, boxShadow: 3, borderRadius: 2, backgroundColor: "#fff" }}>
         <Typography variant="h4" gutterBottom textAlign="center" sx={{ fontWeight: "bold" }}>
           Submit Event Application

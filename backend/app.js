@@ -166,12 +166,24 @@ app.post('/table', async (req, res) => {
 
 app.get('/table', async (req, res) => {
   try {
-    const table = await tableModel.find({});
+    const { type } = req.query;
+    let query = {};
+
+    if (type === "dashboard") {
+      query = { approval: { $regex: /^Approved$/i } };
+    }
+
+    console.log("Fetching events with query:", query);
+    const table = await tableModel.find(query);
+    console.log("Events fetched:", table);
+
     res.json(table);
   } catch (error) {
-    res.status(500).send("Error fetching tables");
+    console.error("Error fetching tables:", error);
+    res.status(500).json({ error: "Error fetching tables", details: error.message });
   }
 });
+
 
 app.delete('/table/:id', async (req, res) => {
   try {
