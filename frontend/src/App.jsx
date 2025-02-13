@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ProtectSociety from './utils/ProtectSociety'
 import ProtectAdmin from './utils/ProtectAdmin'
 import StatsPage from './pages/StatsPage'
-import SubmitApplication from './pages/SubmitApplication'
 
 function App() {
   return (
@@ -15,6 +14,8 @@ function App() {
       <Routes>
         <Route path="/" element={<DashBoard />} />
         <Route path="/login" element={<Login/>} />
+        <Route path="/stats" element={<StatsPage/>} />
+
         <Route element={<ProtectAdmin />} >
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
