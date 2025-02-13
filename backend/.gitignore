@@ -1,2 +1,5 @@
 /node_modules
 /.env
+# Keep tmp folder but ignore its contents
+tmp/*
+!tmp/.gitkeep

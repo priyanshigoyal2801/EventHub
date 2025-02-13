@@ -6,6 +6,7 @@ import CreateEvents from './pages/SubmitApplication'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ProtectSociety from './utils/ProtectSociety'
 import ProtectAdmin from './utils/ProtectAdmin'
+import StatsPage from './pages/StatsPage'
 import SubmitApplication from './pages/SubmitApplication'
 
 function App() {

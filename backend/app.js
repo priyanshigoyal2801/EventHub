@@ -10,8 +10,19 @@ const cors = require('cors');
 const { jwtDecode } = require('jwt-decode');
 require('dotenv').config();
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const fileupload = require('express-fileupload');
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+
+cloudinary.config({ 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+app.use(fileupload({
+  useTempFiles: true
+}));
 
 app.use(cors({
   origin: "http://localhost:5173",
@@ -84,18 +95,33 @@ app.get('/logout', (req, res) => {
 });
 
 // Handle image upload and table creation
-app.post('/table', upload.single('logo'), async (req, res) => {
+app.post('/table', async (req, res) => {
+  if (!req.files || !req.files.logo || !req.files.proposal) {
+    return res.status(400).send('Please upload both logo and proposal files');
+  }
+
   try {
-    const { eventName, orgName, dateFrom, dateTill, venue, timeFrom, timeTill, registrationformlink, feedbackformlink, pocNumber, socials } = req.body;
-    
-    // Handle logo upload - Multer stores the logo as a buffer in req.file.buffer
-    const logoBuffer = req.file ? req.file.buffer : null; // Ensure a logo file is provided
+    // Upload logo
+    const logoUpload = await cloudinary.uploader.upload(req.files.logo.tempFilePath)
+      .catch(err => {
+        throw new Error(`Logo upload failed: ${err.message}`);
+      });
 
-    if (!logoBuffer) {
-      return res.status(400).send('Logo is required');
-    }
+    // Upload proposal
+    const proposalUpload = await cloudinary.uploader.upload(req.files.proposal.tempFilePath, {
+      resource_type: "raw",
+      timeout: 120000
+    }).catch(err => {
+      throw new Error(`Proposal upload failed: ${err.message}`);
+    });
 
-    await tableModel.create({
+    const { 
+      eventName, orgName, dateFrom, dateTill, 
+      venue, timeFrom, timeTill, registrationformlink, 
+      feedbackformlink, pocNumber, socials, description 
+    } = req.body;
+
+    const tableData = await tableModel.create({
       eventName,
       orgName,
       dateFrom,
@@ -106,14 +132,35 @@ app.post('/table', upload.single('logo'), async (req, res) => {
       registrationformlink,
       feedbackformlink,
       pocNumber,
-      logo: logoBuffer, // Store the logo as a Buffer in MongoDB
-      socials: JSON.parse(socials), // Parse socials (since it's passed as a string in the request body)
+      logo: logoUpload.url,
+      socials: JSON.parse(socials),
+      description,
+      proposal: proposalUpload.url,
     });
 
-    res.send("table created");
+    res.status(200).json({
+      message: "Table created successfully",
+      data: tableData
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Error creating table");
+    console.error('Detailed error:', error);
+    res.status(500).json({
+      error: "Error creating table",
+      details: error.message
+    });
+  } finally {
+    // Clean up temp files if they exist
+    if (req.files?.logo?.tempFilePath) {
+      fs.unlink(req.files.logo.tempFilePath, (err) => {
+        if (err) console.error('Error deleting logo temp file:', err);
+      });
+    }
+    if (req.files?.proposal?.tempFilePath) {
+      fs.unlink(req.files.proposal.tempFilePath, (err) => {
+        if (err) console.error('Error deleting proposal temp file:', err);
+      });
+    }
   }
 });
 
