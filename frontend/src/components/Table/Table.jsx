@@ -48,7 +48,7 @@ const getColumns = (type) => {
         { Header: "Time Till", accessor: "timeTill" },
         { Header: "Registration", accessor: "registrationformlink" },
         { Header: "Feedback", accessor: "feedbackformlink" },
-        { Header: "Approval Status", accessor: "approval" },
+        //{ Header: "Approval Status", accessor: "approval" },
         { Header: "Socials", accessor: "socials" },
       ];
     case "society":
