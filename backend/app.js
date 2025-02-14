@@ -179,9 +179,10 @@ app.get('/society/table', async (req, res) => {
   }
   const decoded = jwtDecode(token);
   const userId = decoded.id;
-
+  //console.log(userId);
   try {
     const table = await tableModel.find({ userId });
+    //console.log(table);
     res.json(table);
   } catch (error) {
     res.status(500).send("Error fetching tables");
@@ -197,9 +198,9 @@ app.get('/table', async (req, res) => {
       query = { approval: { $regex: /^Approved$/i } };
     }
 
-    console.log("Fetching events with query:", query);
+    //console.log("Fetching events with query:", query);
     const table = await tableModel.find(query);
-    console.log("Events fetched:", table);
+    //console.log("Events fetched:", table);
 
     res.json(table);
   } catch (error) {
@@ -208,6 +209,32 @@ app.get('/table', async (req, res) => {
   }
 });
 
+app.put('/table/:id/approval', async (req, res) => {
+  const { approval } = req.body;
+
+  try {
+    const table = await tableModel.findByIdAndUpdate(
+      req.params.id,
+      { approval },
+      { new: true }
+    );
+
+    if (!table) {
+      return res.status(404).send("Table not found");
+    }
+
+    res.json({
+      message: "Approval status updated successfully",
+      data: table,
+    });
+  } catch (error) {
+    console.error("Error updating approval status:", error);
+    res.status(500).json({
+      error: "Error updating approval status",
+      details: error.message,
+    });
+  }
+});
 
 app.delete('/table/:id', async (req, res) => {
   try {

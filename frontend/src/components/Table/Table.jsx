@@ -95,25 +95,31 @@ const Table = ({ type }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-  try {
-    const response = await fetch(`http://localhost:3000/table?type=${type}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
-    }
-    const result = await response.json();
-    console.log("Fetched events:", result);
-    setData(result);
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    setError(error.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      try {
+        const endpoint = type === "society" ? "society/table" : "table";
+        const response = await fetch(`http://localhost:3000/${endpoint}?type=${type}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include credentials in the request
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const result = await response.json();
+        //console.log("Fetched events:", result);
+        setData(result);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchData();
-  }, []);
+  }, [type]);
 
   const filteredData = data.filter((row) =>
     Object.values(row).some(
