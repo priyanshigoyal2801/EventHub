@@ -1,4 +1,13 @@
-Category,Rating
-Ease of Use,4
-Features,5
-Support,3
+month,rating,responses,satisfaction,category
+Jan,4.5,120,85,Product Support
+Feb,4.2,150,82,Technical Help
+Mar,4.7,180,88,General Inquiry
+Apr,4.4,160,84,Bug Reports
+May,4.6,200,87,Feature Requests
+Jun,4.3,170,83,Documentation
+Jul,4.8,190,89,Product Support
+Aug,4.5,210,86,Technical Help
+Sep,4.6,230,88,General Inquiry
+Oct,4.4,200,85,Bug Reports
+Nov,4.7,220,89,Feature Requests
+Dec,4.5,240,87,Documentation

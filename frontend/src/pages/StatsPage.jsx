@@ -1,132 +1,186 @@
-import React, { useEffect, useState } from "react";
-import * as XLSX from "xlsx";
-import Papa from "papaparse";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import styles from "../css/StatsPage.module.css";
+import React, { useState } from 'react';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  PieChart, Pie, Cell,
+  LineChart, Line,
+  ResponsiveContainer 
+} from 'recharts';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
+import styles from '../css/StatsPage.module.css';
 
 const StatsPage = () => {
-    const [feedbackData, setFeedbackData] = useState([]);
-    const [registrationData, setRegistrationData] = useState([]);
-    const [eventData, setEventData] = useState([]);
-    const [orgEventsData, setOrgEventsData] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedChart, setSelectedChart] = useState('registrationTrend');
+  const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        fetch("/assets/feedback.csv")
-            .then((res) => res.text())
-            .then((text) => {
-                Papa.parse(text, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: (result) => {
-                        console.log("Feedback Data:", result.data);
-                        setFeedbackData(result.data);
-                    },
-                });
-            });
+  const feedbackData = [
+    { month: 'Jan', rating: 4.5, responses: 120, satisfaction: 85 },
+    { month: 'Feb', rating: 4.2, responses: 150, satisfaction: 82 },
+    { month: 'Mar', rating: 4.7, responses: 180, satisfaction: 88 },
+    { month: 'Apr', rating: 4.4, responses: 160, satisfaction: 84 }
+  ];
 
-        
-        fetch("/assets/registration.xlsx")
-            .then((res) => res.arrayBuffer())
-            .then((buffer) => {
-                const workbook = XLSX.read(buffer, { type: "array" });
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const data = XLSX.utils.sheet_to_json(sheet);
-                console.log("Registration Data:", data);
+  const registrationData = [
+    { month: 'Jan', newUsers: 250, completedProfiles: 200 },
+    { month: 'Feb', newUsers: 300, completedProfiles: 260 },
+    { month: 'Mar', newUsers: 280, completedProfiles: 250 },
+    { month: 'Apr', newUsers: 320, completedProfiles: 290 }
+  ];
 
-                
-                const footfallData = data.map((entry) => ({
-                    Event: entry.EventName,
-                    Footfall: entry.Footfall,
-                }));
+  const chartOptions = [
+    { id: 'registrationTrend', title: 'Registration Trend', icon: '📈' },
+    { id: 'feedbackRatings', title: 'Feedback Ratings', icon: '⭐' },
+    { id: 'satisfactionPie', title: 'Satisfaction Distribution', icon: '🔄' },
+    { id: 'responseRate', title: 'Monthly Response Rate', icon: '📊' }
+  ];
 
-                const orgEventCounts = {};
-                data.forEach((entry) => {
-                    if (orgEventCounts[entry.Organization]) {
-                        orgEventCounts[entry.Organization]++;
-                    } else {
-                        orgEventCounts[entry.Organization] = 1;
-                    }
-                });
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-                setRegistrationData(data);
-                setEventData(footfallData);
-                setOrgEventsData(Object.keys(orgEventCounts).map(org => ({
-                    Organization: org,
-                    Events: orgEventCounts[org],
-                })));
-            });
-    }, []);
+  const handleChartChange = (chartId) => {
+    setIsLoading(true);
+    setSelectedChart(chartId);
+    setTimeout(() => setIsLoading(false), 500);
+  };
 
-    const pieColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
-
-    return (
-        <div className={styles.statsPage}>
-            <h1>Event Statistics</h1>
-
-            {/* Feedback Bar Chart */}
-            <div className={styles.chartContainer}>
-                <h2>Feedback Ratings</h2>
-                <ResponsiveContainer width="95%" height={350}>
-                    <BarChart data={feedbackData.length ? feedbackData : [{ Category: "No Data", Rating: 0 }]}>
-                        <XAxis dataKey="Category" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="Rating" fill="#4CAF50" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-
-            {/* Gender Pie Chart */}
-            <div className={styles.chartContainer}>
-                <h2>Gender Distribution</h2>
-                <ResponsiveContainer width="95%" height={350}>
-                    <PieChart>
-                        <Pie
-                            data={registrationData.length ? registrationData : [{ Gender: "No Data", Count: 0 }]}
-                            dataKey="Count"
-                            nameKey="Gender"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={100}
-                            fill="#8884d8"
-                            label
-                        >
-                            {registrationData.map((_, index) => (
-                                <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
-                            ))}
-                        </Pie>
-                        <Tooltip />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-
-            {/* Event Footfall Bar Chart */}
-            <div className={styles.chartContainer}>
-                <h2>Event Footfall</h2>
-                <ResponsiveContainer width="95%" height={350}>
-                    <BarChart data={eventData.length ? eventData : [{ Event: "No Data", Footfall: 0 }]}>
-                        <XAxis dataKey="Event" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="Footfall" fill="#FF5733" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-
-            {/* Organization vs. Events Bar Chart */}
-            <div className={styles.chartContainer}>
-                <h2>Number of Events per Organization</h2>
-                <ResponsiveContainer width="95%" height={350}>
-                    <BarChart data={orgEventsData.length ? orgEventsData : [{ Organization: "No Data", Events: 0 }]}>
-                        <XAxis dataKey="Organization" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="Events" fill="#3498DB" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
+  const renderChart = () => {
+    if (isLoading) {
+      return (
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner} />
         </div>
-    );
+      );
+    }
+
+    switch(selectedChart) {
+      case 'registrationTrend':
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={registrationData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="newUsers" stroke="#8884d8" name="New Users" />
+              <Line type="monotone" dataKey="completedProfiles" stroke="#82ca9d" name="Completed Profiles" />
+            </LineChart>
+          </ResponsiveContainer>
+        );
+      
+      case 'feedbackRatings':
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={feedbackData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="rating" fill="#8884d8" name="Average Rating" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
+      case 'satisfactionPie':
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
+              <Pie
+                data={feedbackData}
+                dataKey="satisfaction"
+                nameKey="month"
+                cx="50%"
+                cy="50%"
+                outerRadius={150}
+                fill="#8884d8"
+                label
+              >
+                {feedbackData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        );
+
+      case 'responseRate':
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={feedbackData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="responses" fill="#82ca9d" name="Total Responses" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className={styles.toggleButton}
+        >
+          {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
+        </button>
+        
+        <div className={styles.chartList}>
+          {chartOptions.map((chart) => (
+            <button
+              key={chart.id}
+              onClick={() => handleChartChange(chart.id)}
+              className={`${styles.chartButton} ${
+                selectedChart === chart.id ? styles.chartButtonActive : ''
+              }`}
+            >
+              <span className={styles.chartIcon}>{chart.icon}</span>
+              {sidebarOpen && <span>{chart.title}</span>}
+            </button>
+          ))}
+        </div>
+
+        <div className={styles.downloadSection}>
+          <a
+            href="/assets/feedback.csv"
+            download
+            className={styles.downloadLink}
+          >
+            <span className={styles.downloadIcon}>📥</span>
+            {sidebarOpen && <span>Download Feedback Data</span>}
+          </a>
+          <a
+            href="/assets/registration.xlsx"
+            download
+            className={styles.downloadLink}
+          >
+            <span className={styles.downloadIcon}>📥</span>
+            {sidebarOpen && <span>Download Registration Data</span>}
+          </a>
+        </div>
+      </div>
+
+      <main className={styles.mainContent}>
+        <div className={styles.chartContainer}>
+          <h1 className={styles.chartTitle}>
+            {chartOptions.find(c => c.id === selectedChart)?.title}
+          </h1>
+          <div className={styles.chartWrapper}>
+            {renderChart()}
+          </div>
+        </div>
+      </main>
+    </div>
+  );
 };
 
 export default StatsPage;

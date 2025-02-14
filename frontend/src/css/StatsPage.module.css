@@ -1,29 +1,175 @@
-.statsPage {
-  background: url('C:\EVENTS\EventHub\frontend\src\assets\Tiet_Track_Mhostel.jpg') no-repeat center center fixed;
-  background-size: cover;
-  min-height: 100vh;
-  padding: 20px;
+.container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  min-height: 100vh;
+  background-color: #f9fafb;
 }
 
-h1 {
-  color: #fff;
-  text-align: center;
-  font-size: 2rem;
+.sidebar {
+  position: fixed;
+  height: 100vh;
+  background-color: white;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease-in-out;
+  z-index: 100;
+}
+
+.sidebarOpen {
+  width: 256px;
+}
+
+.sidebarClosed {
+  width: 64px;
+}
+
+.toggleButton {
+  padding: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.toggleButton:hover {
+  background-color: #f3f4f6;
+}
+
+.chartList {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chartButton {
+  width: 100%;
+  padding: 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chartButton:hover {
+  background-color: #eff6ff;
+}
+
+.chartButtonActive {
+  background-color: #e0f2fe;
+  border-right: 4px solid #3b82f6;
+  font-weight: 500;
+}
+
+.chartIcon {
+  font-size: 1.25rem;
+}
+
+.downloadSection {
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.downloadLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2563eb;
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+.downloadLink:hover {
+  color: #1d4ed8;
+}
+
+.downloadIcon {
+  font-size: 1.25rem;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 32px;
+  margin-left: 256px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebarClosed + .mainContent {
+  margin-left: 64px;
 }
 
 .chartContainer {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 10px;
-  width: 80%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  min-height: calc(100vh - 64px);
 }
 
-h2 {
-  text-align: center;
-  color: #333;
+.chartTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1f2937;
+}
+
+.chartWrapper {
+  height: 400px;
+  transition: all 0.3s ease-in-out;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .sidebarOpen {
+    width: 224px;
+  }
+  
+  .mainContent {
+    padding: 16px;
+  }
+  
+  .chartContainer {
+    padding: 16px;
+  }
+}
+
+@media print {
+  .sidebar {
+    display: none;
+  }
+  
+  .mainContent {
+    margin-left: 0;
+    padding: 0;
+  }
+  
+  .chartContainer {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
 }
