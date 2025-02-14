@@ -245,4 +245,43 @@ app.delete('/table/:id', async (req, res) => {
   }
 });
 
+app.put('/table/:id', async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).send('No token provided');
+  }
+  const decoded = jwtDecode(token);
+  const userId = decoded.id;
+
+  try {
+    const table = await tableModel.findOneAndUpdate(
+      { _id: req.params.id, userId },
+      req.body,
+      { new: true }
+    );
+    if (!table) {
+      return res.status(404).send('Table not found');
+    }
+    res.json(table);
+  } catch (error) {
+    res.status(500).send("Error updating table");
+  }
+});
+
+app.patch('/table/:id/approve', async (req, res) => {
+  try {
+    const table = await tableModel.findByIdAndUpdate(
+      req.params.id,
+      { approval: "Approved" },
+      { new: true }
+    );
+    if (!table) {
+      return res.status(404).send('Table not found');
+    }
+    res.json(table);
+  } catch (error) {
+    res.status(500).send("Error updating approval status");
+  }
+});
+
 app.listen(3000, () => { console.log("Server started at 3000") });
