@@ -8,6 +8,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState("guest");
+  const [userId, setUserId] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const Navbar = () => {
         const role = tokenData?.decoded?.type || "guest"; 
         setIsLoggedIn(true);
         setUserRole(role.toLowerCase());
+        setUserId(tokenData?.decoded?.id);
       } catch (error) {
         console.error("Failed to fetch token data:", error);
         setIsLoggedIn(false);
@@ -67,7 +69,7 @@ const Navbar = () => {
           <>
             <a href="#" className={styles.navLink}>Requested Changes</a>
             <a href="#" className={styles.navLink}>Stats</a>
-            <a href="/society/table" className={styles.navLink}>My Events</a>
+            <a href={`/society/${userId}`} className={styles.navLink}>My Events</a>
             <a href={`/society/create-event`} className={styles.navLink}>Create Event</a>
           </>
         )}
