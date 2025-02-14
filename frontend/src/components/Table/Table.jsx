@@ -19,9 +19,12 @@ import {
   CircularProgress,
   Alert,
   Modal,
+  Snackbar,
 } from "@mui/material";
 import { Search as SearchIcon, Close as CloseIcon } from "@mui/icons-material";
 import { GetApp as DownloadIcon } from '@mui/icons-material';
+import axios from "axios";
+import SubmitApplication from "../../pages/SubmitApplication";
 
 const darkTheme = createTheme({
   palette: {
@@ -92,28 +95,30 @@ const Table = ({ type }) => {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [editData, setEditData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-  try {
-    const response = await fetch(`http://localhost:3000/table?type=${type}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
-    }
-    const result = await response.json();
-    console.log("Fetched events:", result);
-    setData(result);
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    setError(error.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      try {
+        const response = await fetch(`http://localhost:3000/table?type=${type}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const result = await response.json();
+        console.log("Fetched events:", result);
+        setData(result);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchData();
-  }, []);
+  }, [type]);
 
   const filteredData = data.filter((row) =>
     Object.values(row).some(
@@ -122,15 +127,6 @@ const Table = ({ type }) => {
         value.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
-
-  const arrayBufferToBase64 = (arrayBuffer) => {
-    const bytes = new Uint8Array(arrayBuffer);
-    let binary = "";
-    for (let i = 0; i < bytes.length; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-  };
 
   const columns = useMemo(() => getColumns(type), [type]);
 
@@ -160,6 +156,28 @@ const Table = ({ type }) => {
     setModalContent("");
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/table/${id}`);
+      setData(data.filter((item) => item._id !== id));
+      setSnackbarMessage("Event deleted successfully");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      setSnackbarMessage("Error deleting event");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleEdit = (row) => {
+    setEditData(row);
+    setModalOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <ThemeProvider theme={darkTheme}>
       <Box
@@ -181,7 +199,7 @@ const Table = ({ type }) => {
             variant="h4"
             sx={{ color: "text.primary", fontWeight: "bold" }}
           >
-            Events 
+            Events
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <IconButton
@@ -316,23 +334,16 @@ const Table = ({ type }) => {
                                 : "Feedback"}
                             </Link>
                           ) : column.accessor === "actions" ? (
-                            row.approval === "pending" ? (
+                            row.approval === "Pending" ? (
                               <>
                                 <Button
                                   variant="contained"
                                   color="primary"
                                   size="small"
                                   sx={{ marginRight: 1, borderRadius: 2 }}
+                                  onClick={() => handleEdit(row)}
                                 >
                                   Edit
-                                </Button>
-                                <Button
-                                  variant="contained"
-                                  color="secondary"
-                                  size="small"
-                                  sx={{ borderRadius: 2 }}
-                                >
-                                  Delete
                                 </Button>
                               </>
                             ) : (
@@ -341,13 +352,14 @@ const Table = ({ type }) => {
                                 color="error"
                                 size="small"
                                 sx={{ borderRadius: 2 }}
+                                onClick={() => handleDelete(row._id)}
                               >
-                                Cancel
+                                Cancel Event
                               </Button>
                             )
                           ) : column.accessor === "logo" ? (
                             <img
-                            src={row.logo}
+                              src={row.logo}
                               alt="logo"
                               style={{ width: "50px", height: "50px" }}
                             />
@@ -417,28 +429,40 @@ const Table = ({ type }) => {
               bgcolor: "background.paper",
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{ color: "text.primary", fontWeight: "bold" }}
-            >
-              Event Description
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{ color: "text.primary", marginTop: "10px" }}
-            >
-              {modalContent}
-            </Typography>
-            <Button
-              onClick={closeModal}
-              variant="contained"
-              color="secondary"
-              sx={{ marginTop: "15px", width: "100%" }}
-            >
-              Close
-            </Button>
+            {editData ? (
+              <SubmitApplication editData={editData} onClose={closeModal} />
+            ) : (
+              <>
+                <Typography
+                  variant="h6"
+                  sx={{ color: "text.primary", fontWeight: "bold" }}
+                >
+                  Event Description
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ color: "text.primary", marginTop: "10px" }}
+                >
+                  {modalContent}
+                </Typography>
+                <Button
+                  onClick={closeModal}
+                  variant="contained"
+                  color="secondary"
+                  sx={{ marginTop: "15px", width: "100%" }}
+                >
+                  Close
+                </Button>
+              </>
+            )}
           </Paper>
         </Modal>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          message={snackbarMessage}
+        />
       </Box>
     </ThemeProvider>
   );
