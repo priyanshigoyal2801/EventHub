@@ -51,7 +51,6 @@ const getColumns = (type) => {
         { Header: "Time Till", accessor: "timeTill" },
         { Header: "Registration", accessor: "registrationformlink" },
         { Header: "Feedback", accessor: "feedbackformlink" },
-        //{ Header: "Approval Status", accessor: "approval" },
         { Header: "Socials", accessor: "socials" },
       ];
     case "society":
@@ -80,7 +79,8 @@ const getColumns = (type) => {
         { Header: "Time Till", accessor: "timeTill" },
         { Header: "Approval Status", accessor: "approval" },
         { Header: "POC", accessor: "pocNumber" },
-        { Header: "Actions", accessor: "actions" },
+        { Header: "Approve", accessor: "approve" },
+        { Header: "Deny", accessor: "deny" },
       ];
     default:
       return [];
@@ -126,6 +126,32 @@ const Table = ({ type }) => {
 
     fetchData();
   }, [type]);
+
+  const handleApprove = async (id) => {
+    try {
+      await axios.patch(`http://localhost:3000/table/${id}/approve`);
+      setData(data.map((item) => (item._id === id ? { ...item, approval: "Approved" } : item)));
+      setSnackbarMessage("Event approved successfully");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error approving event:", error);
+      setSnackbarMessage("Error approving event");
+      setSnackbarOpen(true);
+    }
+  };
+  
+  const handleDeny = async (id) => {
+    try {
+      await axios.patch(`http://localhost:3000/table/${id}/deny`);
+      setData(data.map((item) => (item._id === id ? { ...item, approval: "Denied" } : item)));
+      setSnackbarMessage("Event denied successfully");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error denying event:", error);
+      setSnackbarMessage("Error denying event");
+      setSnackbarOpen(true);
+    }
+  };
 
   const filteredData = data.filter((row) =>
     Object.values(row).some(
@@ -340,7 +366,7 @@ const Table = ({ type }) => {
                                 ? "Register"
                                 : "Feedback"}
                             </Link>
-                          ) : column.accessor === "actions" ? (
+                          ) : column.accessor === "actions" && type === "society" ? (
                             row.approval === "Pending" ? (
                               <>
                                 <Button
@@ -364,6 +390,26 @@ const Table = ({ type }) => {
                                 Cancel Event
                               </Button>
                             )
+                          ) : column.accessor === "approve" && type === "admin" ? (
+                            <Button
+                              variant="contained"
+                              color="success"
+                              size="small"
+                              sx={{ borderRadius: 2 }}
+                              onClick={() => handleApprove(row._id)}
+                            >
+                              Approve
+                            </Button>
+                          ) : column.accessor === "deny" && type === "admin" ? (
+                            <Button
+                              variant="contained"
+                              color="error"
+                              size="small"
+                              sx={{ borderRadius: 2 }}
+                              onClick={() => handleDeny(row._id)}
+                            >
+                              Deny
+                            </Button>
                           ) : column.accessor === "logo" ? (
                             <img
                               src={row.logo}

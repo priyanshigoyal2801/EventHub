@@ -209,33 +209,6 @@ app.get('/table', async (req, res) => {
   }
 });
 
-app.put('/table/:id/approval', async (req, res) => {
-  const { approval } = req.body;
-
-  try {
-    const table = await tableModel.findByIdAndUpdate(
-      req.params.id,
-      { approval },
-      { new: true }
-    );
-
-    if (!table) {
-      return res.status(404).send("Table not found");
-    }
-
-    res.json({
-      message: "Approval status updated successfully",
-      data: table,
-    });
-  } catch (error) {
-    console.error("Error updating approval status:", error);
-    res.status(500).json({
-      error: "Error updating approval status",
-      details: error.message,
-    });
-  }
-});
-
 app.delete('/table/:id', async (req, res) => {
   try {
     await tableModel.findByIdAndDelete(req.params.id);
@@ -273,6 +246,22 @@ app.patch('/table/:id/approve', async (req, res) => {
     const table = await tableModel.findByIdAndUpdate(
       req.params.id,
       { approval: "Approved" },
+      { new: true }
+    );
+    if (!table) {
+      return res.status(404).send('Table not found');
+    }
+    res.json(table);
+  } catch (error) {
+    res.status(500).send("Error updating approval status");
+  }
+});
+
+app.patch('/table/:id/deny', async (req, res) => {
+  try {
+    const table = await tableModel.findByIdAndUpdate(
+      req.params.id,
+      { approval: "Denied" },
       { new: true }
     );
     if (!table) {
