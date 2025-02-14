@@ -10,31 +10,52 @@ import styles from '../css/StatsPage.module.css';
 
 const StatsPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedChart, setSelectedChart] = useState('registrationTrend');
+  const [selectedChart, setSelectedChart] = useState('eventFootfall');
   const [isLoading, setIsLoading] = useState(false);
 
-  const feedbackData = [
-    { month: 'Jan', rating: 4.5, responses: 120, satisfaction: 85 },
-    { month: 'Feb', rating: 4.2, responses: 150, satisfaction: 82 },
-    { month: 'Mar', rating: 4.7, responses: 180, satisfaction: 88 },
-    { month: 'Apr', rating: 4.4, responses: 160, satisfaction: 84 }
+  const eventFootfallData = [
+    { month: 'Jan', hackathon: 280, cpContest: 150, ideathon: 180 },
+    { month: 'Feb', hackathon: 320, cpContest: 200, ideathon: 220 },
+    { month: 'Mar', hackathon: 300, cpContest: 180, ideathon: 250 },
+    { month: 'Apr', hackathon: 350, cpContest: 220, ideathon: 280 }
   ];
 
-  const registrationData = [
-    { month: 'Jan', newUsers: 250, completedProfiles: 200 },
-    { month: 'Feb', newUsers: 300, completedProfiles: 260 },
-    { month: 'Mar', newUsers: 280, completedProfiles: 250 },
-    { month: 'Apr', newUsers: 320, completedProfiles: 290 }
+  const eventCountData = [
+    { month: 'Jan', hackathon: 2, cpContest: 4, ideathon: 1 },
+    { month: 'Feb', hackathon: 3, cpContest: 4, ideathon: 2 },
+    { month: 'Mar', hackathon: 2, cpContest: 5, ideathon: 2 },
+    { month: 'Apr', hackathon: 3, cpContest: 4, ideathon: 3 }
+  ];
+
+  const feedbackData = [
+    { 
+      event: 'Hackathon',
+      rating: 4.5,
+      responses: 120,
+      satisfaction: 85 
+    },
+    { 
+      event: 'CP Contest',
+      rating: 4.7,
+      responses: 150,
+      satisfaction: 88 
+    },
+    { 
+      event: 'Ideathon',
+      rating: 4.4,
+      responses: 130,
+      satisfaction: 82 
+    }
   ];
 
   const chartOptions = [
-    { id: 'registrationTrend', title: 'Registration Trend', icon: '📈' },
-    { id: 'feedbackRatings', title: 'Feedback Ratings', icon: '⭐' },
-    { id: 'satisfactionPie', title: 'Satisfaction Distribution', icon: '🔄' },
-    { id: 'responseRate', title: 'Monthly Response Rate', icon: '📊' }
+    { id: 'eventFootfall', title: 'Event Footfall', icon: '👥' },
+    { id: 'eventCount', title: 'Events per Month', icon: '📊' },
+    { id: 'feedbackRatings', title: 'Event Feedback', icon: '⭐' },
+    { id: 'satisfactionPie', title: 'Event Satisfaction', icon: '🔄' }
   ];
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
 
   const handleChartChange = (chartId) => {
     setIsLoading(true);
@@ -52,31 +73,49 @@ const StatsPage = () => {
     }
 
     switch(selectedChart) {
-      case 'registrationTrend':
+      case 'eventFootfall':
         return (
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={registrationData}>
+            <BarChart data={eventFootfallData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="newUsers" stroke="#8884d8" name="New Users" />
-              <Line type="monotone" dataKey="completedProfiles" stroke="#82ca9d" name="Completed Profiles" />
-            </LineChart>
+              <Bar dataKey="hackathon" fill="#8884d8" name="Hackathon" />
+              <Bar dataKey="cpContest" fill="#82ca9d" name="CP Contest" />
+              <Bar dataKey="ideathon" fill="#ffc658" name="Ideathon" />
+            </BarChart>
           </ResponsiveContainer>
         );
       
+      case 'eventCount':
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={eventCountData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="hackathon" fill="#8884d8" name="Hackathon" />
+              <Bar dataKey="cpContest" fill="#82ca9d" name="CP Contest" />
+              <Bar dataKey="ideathon" fill="#ffc658" name="Ideathon" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
       case 'feedbackRatings':
         return (
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={feedbackData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
+              <XAxis dataKey="event" />
               <YAxis />
               <Tooltip />
               <Legend />
               <Bar dataKey="rating" fill="#8884d8" name="Average Rating" />
+              <Bar dataKey="responses" fill="#82ca9d" name="Total Responses" />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -88,7 +127,7 @@ const StatsPage = () => {
               <Pie
                 data={feedbackData}
                 dataKey="satisfaction"
-                nameKey="month"
+                nameKey="event"
                 cx="50%"
                 cy="50%"
                 outerRadius={150}
@@ -102,20 +141,6 @@ const StatsPage = () => {
               <Tooltip />
               <Legend />
             </PieChart>
-          </ResponsiveContainer>
-        );
-
-      case 'responseRate':
-        return (
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={feedbackData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="responses" fill="#82ca9d" name="Total Responses" />
-            </BarChart>
           </ResponsiveContainer>
         );
 
@@ -148,31 +173,12 @@ const StatsPage = () => {
             </button>
           ))}
         </div>
-
-        <div className={styles.downloadSection}>
-          <a
-            href="/assets/feedback.csv"
-            download
-            className={styles.downloadLink}
-          >
-            <span className={styles.downloadIcon}>📥</span>
-            {sidebarOpen && <span>Download Feedback Data</span>}
-          </a>
-          <a
-            href="/assets/registration.xlsx"
-            download
-            className={styles.downloadLink}
-          >
-            <span className={styles.downloadIcon}>📥</span>
-            {sidebarOpen && <span>Download Registration Data</span>}
-          </a>
-        </div>
       </div>
 
       <main className={styles.mainContent}>
         <div className={styles.chartContainer}>
           <h1 className={styles.chartTitle}>
-            {chartOptions.find(c => c.id === selectedChart)?.title}
+            Techsocity - {chartOptions.find(c => c.id === selectedChart)?.title}
           </h1>
           <div className={styles.chartWrapper}>
             {renderChart()}

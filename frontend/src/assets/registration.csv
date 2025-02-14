@@ -1,13 +1,13 @@
-month,newUsers,completedProfiles,source,region
-Jan,250,200,Organic,North
-Feb,300,260,Referral,South
-Mar,280,250,Social,East
-Apr,320,290,Paid,West
-May,350,310,Organic,North
-Jun,330,300,Referral,South
-Jul,370,340,Social,East
-Aug,400,370,Paid,West
-Sep,420,390,Organic,North
-Oct,380,350,Referral,South
-Nov,410,380,Social,East
-Dec,450,420,Paid,West
+month,event_type,footfall,event_count
+Jan,Hackathon,280,2
+Jan,CP Contest,150,4
+Jan,Ideathon,180,1
+Feb,Hackathon,320,3
+Feb,CP Contest,200,4
+Feb,Ideathon,220,2
+Mar,Hackathon,300,2
+Mar,CP Contest,180,5
+Mar,Ideathon,250,2
+Apr,Hackathon,350,3
+Apr,CP Contest,220,4
+Apr,Ideathon,280,3
