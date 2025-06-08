@@ -6,6 +6,9 @@ import Cookies from 'js-cookie';
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [type, setType] = useState("Society");
+  const [isRegistering, setIsRegistering] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,7 +25,6 @@ const Login = () => {
       const data = await response.json();
       if (response.ok) {
         console.log("User data:", data);
-        // alert(`User data: ${JSON.stringify(data)}`);
         if (data.decoded.type === "Admin") {
           navigate("/admin");
         } else if (data.decoded.type === "Society") {
@@ -44,25 +46,35 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const endpoint = isRegistering ? "http://localhost:3000/register" : "http://localhost:3000/login";
+      const body = isRegistering 
+        ? { name, email, password, type }
+        : { email, password };
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
       if (response.ok) {
-        Cookies.set("token", data.token, { expires: 1 });
-        alert(data.message);
-        await getUserFromToken();
+        if (isRegistering) {
+          alert("Registration successful! Please login.");
+          setIsRegistering(false);
+        } else {
+          Cookies.set("token", data.token, { expires: 1 });
+          alert(data.message);
+          await getUserFromToken();
+        }
       } else {
-        alert(data.error || "Login failed");
+        alert(data.error || (isRegistering ? "Registration failed" : "Login failed"));
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error(isRegistering ? "Registration failed:" : "Login failed:", error);
       alert("Something went wrong. Please try again!");
     } finally {
       setLoading(false);
@@ -73,8 +85,29 @@ const Login = () => {
     <>
       <div className={styles.bg}></div>
       <div className={styles.container}>
-        <h2>Login as Society/Admin</h2>
+        <h2>{isRegistering ? "Register" : "Login"} as Society/Admin</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
+          {isRegistering && (
+            <>
+              <input
+                type="text"
+                placeholder="Name"
+                className={styles.input}
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <select
+                className={styles.input}
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                required
+              >
+                <option value="Society">Society</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </>
+          )}
           <input
             type="email"
             placeholder="Email"
@@ -93,9 +126,15 @@ const Login = () => {
           />
 
           <button type="submit" className={styles.submitButton} disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? (isRegistering ? "Registering..." : "Logging in...") : (isRegistering ? "Register" : "Login")}
           </button>
         </form>
+        <button 
+          className={styles.toggleSignup}
+          onClick={() => setIsRegistering(!isRegistering)}
+        >
+          {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
+        </button>
       </div>
     </>
   );
